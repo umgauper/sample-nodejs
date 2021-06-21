@@ -600,7 +600,13 @@ function randomPage(req, res) {
   res.render('random', {title: title, paragraphs: paragraphs, links: links});
 }
 
-router.all('*', randomPage);
+function waves(req, res) {
+
+    res.render('waves', {title: "Waves"});
+}
+
+router.all('/', randomPage);
+router.all('/waves', waves);
 
 // console.log(lorem.generateParagraphs(7));
 

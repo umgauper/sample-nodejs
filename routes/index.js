@@ -601,7 +601,6 @@ function randomPage(req, res) {
 }
 
 function waves(req, res) {
-
     res.render('waves', {title: "Waves"});
 }
 

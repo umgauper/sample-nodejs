@@ -46,41 +46,58 @@ Waves.prototype.init = function(){
         this.isMouseDown = true;
     }.bind(this));
 
+    this._$box.on("touchstart", function () {
+        this.isTouchDown = true;
+    }.bind(this));
+
     this._$box.on("mousemove", this.drawCircles.bind(this));
+    this._$box.on("touchmove", this.drawCircles.bind(this));
     this._$box.on("mouseup", function () {
         this.isMouseDown = false;
+    }.bind(this));
+    this._$box.on("touchend", function () {
+        this.isTouchDown = false;
     }.bind(this));
 };
 
 Waves.prototype.diameter = 0;
-
 Waves.prototype.isMouseDown = false;
+Waves.prototype.isTouchDown = false;
 
 Waves.prototype.drawCircles = function(e) {
 
     var iterations = 0;
 
-    var createCircle = (function(width, xPos, yPos) {
+    var createCircle = (function(xPos, yPos) {
         return function() {
 
-            var marginLeft = xPos - 1/2 * width - 8;
-            var marginTop = yPos - 1/2 * width - 28;
+            var circleWidth = this.isTouchDown ? 100 : Waves.defaults.WIDTH;
+            var marginLeft = xPos - 1/2 * circleWidth - 8;
+            var marginTop = yPos - 1/2 * circleWidth - 28;
 
-            var styles = {marginTop: marginTop, marginLeft: marginLeft, border: `2px solid ${this.color}`};
-            this._$box.append($("<div></div>").addClass("circle").width(width).height(width).css(styles));
+            var styles = {
+                marginTop: marginTop, 
+                marginLeft: marginLeft, 
+                border: `2px solid ${this.color}`
+            };
+
+            this._$box
+                .append($("<div></div>")
+                .addClass("circle")
+                .width(circleWidth)
+                .height(circleWidth)
+                .css(styles));
 
             if (iterations > Waves.defaults.MAXITERATIONS) {
                 clearInterval(intervalId);
             }
 
             iterations++;
-
-            width = width * Waves.defaults.RATEOFINCREASE;
         }.bind(this);
 
-    }.bind(this))(this.diameter || Waves.defaults.WIDTH, e.pageX, e.pageY);
+    }.bind(this))(e.pageX, e.pageY);
 
-    if (this.isMouseDown) {
+    if (this.isMouseDown || this.isTouchDown) {
         var intervalId = setInterval(createCircle, Waves.defaults.INTERVAL);
     }
 };
